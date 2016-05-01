@@ -100,11 +100,23 @@ int main(int argv, char** args) {
 	while (currTok.type != EOFTok) {
 		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
+		/*
 		cout << "{Instruction} " << stmt.instruction.token.strVal << endl;
 		for (unsigned i = 0; i < stmt.operands.size(); i++) {
 			cout << "{Operand} " << stmt.operands.at(i).token.strVal << endl;
 		}
+		*/
 	}
+
+	for (unsigned i = 0; i < stmtList.size(); i++) {
+		StatementAST stmt = stmtList.at(i);
+		cout << "{Instruction} " << stmt.instruction.token.strVal;
+		for (unsigned j = 0; j < stmt.operands.size(); j++) {
+			cout << "{Operand} " << stmt.operands.at(j).token.strVal;
+		}
+		cout << endl;
+	}
+
 
 	return 0;
 }
