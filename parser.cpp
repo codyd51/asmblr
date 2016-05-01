@@ -46,31 +46,29 @@ void verifyType(TokenType type) {
 }
 
 void match(string str) {
-	getTok();
 	if (currTok.strVal != str) {
 		string errorStr = "Expected " + str + ", received " + currTok.strVal;
 		error(errorStr);
 	}
+	getTok();
 }
 	
 
 InstructionAST parseInstruction() {
-	getTok();
-
 	verifyType(Instruction);
 	InstructionAST ret(currTok);
+	getTok();
 	return ret;
 }
 
 OperandAST parseOperand() {
-	getTok();
-
 	//verifyType only handles checking one type, whereas an operand can be a register or number
 	//check manually for now
 	if (currTok.type != Register && currTok.type != Number) {
 		verifyType(Register);
 	}
 	OperandAST operand(currTok);
+	getTok();
 	return operand;
 }
 
@@ -97,22 +95,17 @@ StatementAST parseStatement() {
 
 int main(int argv, char** args) {
 	vector<StatementAST> stmtList;
+	getTok();
 	while (currTok.type != EOFTok) {
 		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
-		/*
-		cout << "{Instruction} " << stmt.instruction.token.strVal << endl;
-		for (unsigned i = 0; i < stmt.operands.size(); i++) {
-			cout << "{Operand} " << stmt.operands.at(i).token.strVal << endl;
-		}
-		*/
 	}
 
 	for (unsigned i = 0; i < stmtList.size(); i++) {
 		StatementAST stmt = stmtList.at(i);
 		cout << "{Instruction} " << stmt.instruction.token.strVal;
 		for (unsigned j = 0; j < stmt.operands.size(); j++) {
-			cout << "{Operand} " << stmt.operands.at(j).token.strVal;
+			cout << " {Operand} " << stmt.operands.at(j).token.strVal;
 		}
 		cout << endl;
 	}
