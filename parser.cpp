@@ -40,7 +40,7 @@ void error(string errorStr) {
 
 void verifyType(TokenType type) {
 	if (currTok.type != type) {
-		string errorStr = "Expected type " + type + ", received type "+currTok.type;
+		string errorStr = "Expected type " + to_string(type) + ", received type " + to_string(currTok.type);
 		error(errorStr);
 	}
 }
@@ -101,7 +101,7 @@ int main(int argv, char** args) {
 		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
 		cout << "{Instruction} " << stmt.instruction.token.strVal << endl;
-		for (int i = 0; i < stmt.operands.size(); i++) {
+		for (unsigned i = 0; i < stmt.operands.size(); i++) {
 			cout << "{Operand} " << stmt.operands.at(i).token.strVal << endl;
 		}
 	}
