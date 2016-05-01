@@ -2,14 +2,30 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 
 using namespace std;
 
 Token currTok;
 
-struct Statement {
-	Token Instruction;
-	vector<Token> Operands;
+struct InstructionAST {
+	Token token;
+	InstructionAST(Token token) : token(token) {}
+	InstructionAST() {}
+};
+
+struct OperandAST {
+	Token token;
+	//bool position;
+	OperandAST(Token token) : token(token) {}
+	OperandAST() {}
+};
+
+struct StatementAST {
+	InstructionAST instruction;
+	vector<OperandAST> operands;
+	StatementAST(InstructionAST instruction, vector<OperandAST> operands) : instruction(instruction), operands(operands) {}
+	StatementAST() {}
 };
 
 Token getTok() {
@@ -17,35 +33,62 @@ Token getTok() {
 	return currTok;
 }
 
-Statement parseStatement() {
-	Statement stmt;
-	if (currTok.type == Instruction) {
-		stmt.Instruction = currTok;
+void error(string errorStr) {
+	cout << "Error: " << errorStr << "." << endl;
+	exit(1);
+}
+
+void verifyType(TokenType type) {
+	if (currTok.type != type) {
+		string errorStr = "Expected type " + type + ", received type "+currTok.type;
+		error(errorStr);
 	}
-	else {
-		cout << "Expected instruction, received '" << currTok.strVal << "'" << endl;
+}
+
+void match(string str) {
+	getTok();
+	if (currTok.strVal != str) {
+		string errorStr = "Expected " + str + ", received " + currTok.strVal;
+		error(errorStr);
 	}
+}
 	
-	if (currTok.argCount > 0) {
-		getTok();
-		if (currTok.type == Register || currTok.type == Number) {
-			stmt.Operands.push_back(currTok);
-			for (int i = 1; i < currTok.argCount - 1; i++) {
-				//eat comma
-				getTok();
-				if (currTok.type == Comma) {
-					getTok();
-					if (currTok.type == Register || currTok.type == Number) {
-						stmt.Operands.push_back(currTok);
-					}
-				}
-				else {
-					cout << "Expected comma, received '" << currTok.strVal << "'" << endl;
-				}
-			}
-		}
-		else {
-			cout << "Expected register or number, received '" << currTok.strVal << "'" << endl;
+
+InstructionAST parseInstruction() {
+	getTok();
+
+	verifyType(Instruction);
+	InstructionAST ret(currTok);
+	return ret;
+}
+
+OperandAST parseOperand() {
+	getTok();
+
+	//verifyType only handles checking one type, whereas an operand can be a register or number
+	//check manually for now
+	if (currTok.type != Register && currTok.type != Number) {
+		verifyType(Register);
+	}
+	OperandAST operand(currTok);
+	return operand;
+}
+
+
+
+StatementAST parseStatement() {
+	StatementAST stmt;
+	stmt.instruction = parseInstruction();
+	
+	if (stmt.instruction.token.argCount > 0) {
+		stmt.operands.push_back(parseOperand());
+	
+		for (int i = 1; i < stmt.instruction.token.argCount; i++) {
+			//eat comma
+			match(",");
+
+			//get next operand
+			stmt.operands.push_back(parseOperand());
 		}
 	}
 
@@ -53,13 +96,13 @@ Statement parseStatement() {
 }
 
 int main(int argv, char** args) {
-	vector<Statement> stmtList;
-	while (getTok().type != EOFTok) {
-		Statement stmt = parseStatement();
+	vector<StatementAST> stmtList;
+	while (currTok.type != EOFTok) {
+		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
-		cout << "{Instruction} " << stmt.Instruction.strVal << endl;
-		for (int i = 0; i < stmt.Operands.size(); i++) {
-			cout << "{Operand} " << stmt.Operands.at(i).strVal << endl;
+		cout << "{Instruction} " << stmt.instruction.token.strVal << endl;
+		for (int i = 0; i < stmt.operands.size(); i++) {
+			cout << "{Operand} " << stmt.operands.at(i).token.strVal << endl;
 		}
 	}
 
