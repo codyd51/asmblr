@@ -19,15 +19,33 @@ Token getTok() {
 
 Statement parseStatement() {
 	Statement stmt;
-	stmt.Instruction = currTok;
+	if (currTok.type == Instruction) {
+		stmt.Instruction = currTok;
+	}
+	else {
+		cout << "Expected instruction, received '" << currTok.strVal << "'" << endl;
+	}
 	
 	if (currTok.argCount > 0) {
-		stmt.Operands.push_back(getTok());
-		for (int i = 1; i < currTok.argCount - 1; i++) {
-			//eat comma
-			getTok();
-			
-			stmt.Operands.push_back(getTok());
+		getTok();
+		if (currTok.type == Register || currTok.type == Number) {
+			stmt.Operands.push_back(currTok);
+			for (int i = 1; i < currTok.argCount - 1; i++) {
+				//eat comma
+				getTok();
+				if (currTok.type == Comma) {
+					getTok();
+					if (currTok.type == Register || currTok.type == Number) {
+						stmt.Operands.push_back(currTok);
+					}
+				}
+				else {
+					cout << "Expected comma, received '" << currTok.strVal << "'" << endl;
+				}
+			}
+		}
+		else {
+			cout << "Expected register or number, received '" << currTok.strVal << "'" << endl;
 		}
 	}
 
