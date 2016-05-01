@@ -93,14 +93,17 @@ StatementAST parseStatement() {
 	return stmt;
 }
 
-int main(int argv, char** args) {
+vector<StatementAST> generateAST() {
 	vector<StatementAST> stmtList;
 	getTok();
 	while (currTok.type != EOFTok) {
 		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
 	}
+}
 
+int main(int argv, char** args) {
+	vector<StatementAST> stmtList = generateAST();
 	for (unsigned i = 0; i < stmtList.size(); i++) {
 		StatementAST stmt = stmtList.at(i);
 		cout << "{Instruction} " << stmt.instruction.token.strVal;
