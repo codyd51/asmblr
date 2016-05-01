@@ -21,11 +21,14 @@ Statement parseStatement() {
 	Statement stmt;
 	stmt.Instruction = currTok;
 	
-	stmt.Operands.push_back(getTok());
-	Token nextTok = getTok();
-	if (nextTok.type == Comma) {
-		//get second operand
+	if (currTok.argCount > 0) {
 		stmt.Operands.push_back(getTok());
+		for (int i = 1; i < currTok.argCount - 1; i++) {
+			//eat comma
+			getTok();
+			
+			stmt.Operands.push_back(getTok());
+		}
 	}
 
 	return stmt;

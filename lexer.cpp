@@ -46,6 +46,10 @@ Token getToken() {
 			token.type = Instruction;
 			token.argCount = 2;
 		}
+		else if (tokenStr == "or") {
+			token.type = Instruction;
+			token.argCount = 1;
+		}
 		else if (tokenStr.at(0) == 'r' || tokenStr.at(0) == 'R') {
 			token.type = Register;
 		}
