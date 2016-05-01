@@ -12,6 +12,7 @@ struct Token {
 	TokenType type;
 	std::string strVal;
 	int intVal;
+	int argCount;
 };
 
 Token getToken();

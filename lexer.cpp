@@ -40,6 +40,11 @@ Token getToken() {
 		//match keywords here
 		if (tokenStr == "ret") {
 			token.type = Instruction;
+			token.argCount = 0;
+		}
+		else if (tokenStr == "mov") {
+			token.type = Instruction;
+			token.argCount = 2;
 		}
 		else if (tokenStr.at(0) == 'r' || tokenStr.at(0) == 'R') {
 			token.type = Register;
