@@ -9,5 +9,8 @@ lexer: lexer.h lexer.cpp
 parser: parser.cpp
 	$(CC) $(CFLAGS) parser.cpp
 
-asmblr: lexer.o parser.o
-	$(CC) lexer.o parser.o -o asmblr.o
+translator: translator.cpp
+	$(CC) $(CFLAGS) translator.cpp
+
+asmblr: lexer.o parser.o translator.o
+	$(CC) lexer.o parser.o translator.o -o asmblr.o

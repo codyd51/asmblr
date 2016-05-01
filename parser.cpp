@@ -1,32 +1,9 @@
-#include "lexer.h"
+#include "parser.h"
 #include <iostream>
 #include <string>
-#include <vector>
 #include <cstdlib>
 
-using namespace std;
-
 Token currTok;
-
-struct InstructionAST {
-	Token token;
-	InstructionAST(Token token) : token(token) {}
-	InstructionAST() {}
-};
-
-struct OperandAST {
-	Token token;
-	//bool position;
-	OperandAST(Token token) : token(token) {}
-	OperandAST() {}
-};
-
-struct StatementAST {
-	InstructionAST instruction;
-	vector<OperandAST> operands;
-	StatementAST(InstructionAST instruction, vector<OperandAST> operands) : instruction(instruction), operands(operands) {}
-	StatementAST() {}
-};
 
 Token getTok() {
 	currTok = getToken();
@@ -100,19 +77,5 @@ vector<StatementAST> generateAST() {
 		StatementAST stmt = parseStatement();
 		stmtList.push_back(stmt);
 	}
-}
-
-int main(int argv, char** args) {
-	vector<StatementAST> stmtList = generateAST();
-	for (unsigned i = 0; i < stmtList.size(); i++) {
-		StatementAST stmt = stmtList.at(i);
-		cout << "{Instruction} " << stmt.instruction.token.strVal;
-		for (unsigned j = 0; j < stmt.operands.size(); j++) {
-			cout << " {Operand} " << stmt.operands.at(j).token.strVal;
-		}
-		cout << endl;
-	}
-
-
-	return 0;
+	return stmtList;
 }
