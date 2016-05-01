@@ -4,6 +4,7 @@ enum TokenType {
 	Instruction = 0,
 	Register,
 	Number,
+	Comma,
 	EOFTok
 };
 

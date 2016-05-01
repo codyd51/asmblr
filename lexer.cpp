@@ -15,12 +15,24 @@ Token getToken() {
 		lastChar = getchar();
 	}
 
+	//comma separating operands
+	if (lastChar == ',') {
+		token.type = Comma;
+		token.strVal = ",";
+		lastChar = getchar();
+	}
+
+	//don't eat EOF!
+	else if (lastChar == EOF || lastChar == '\n' || lastChar == '\r' || lastChar == 'q') {
+		token.type = EOFTok;
+	}
+
 	//identifier
-	if (isalpha(lastChar)) {
+	else if (isalpha(lastChar)) {
 		string tokenStr;
 
 		//while there are characters to read, build up this identifier
-		while (isalpha(lastChar)) {
+		while (isalnum(lastChar)) {
 			tokenStr += lastChar;
 			lastChar = getchar();
 		}
@@ -29,8 +41,13 @@ Token getToken() {
 		if (tokenStr == "ret") {
 			token.type = Instruction;
 		}
-		else {
+		else if (tokenStr.at(0) == 'r' || tokenStr.at(0) == 'R') {
 			token.type = Register;
+		}
+		else {
+			//unknown!
+			cout << "Unknown token encountered: " << tokenStr << endl;
+			exit(1);
 		}
 
 		token.strVal = tokenStr;
@@ -61,11 +78,6 @@ Token getToken() {
 		if (lastChar != EOF) {
 			return getToken();
 		}
-	}
-
-	//don't eat EOF!
-	else if (lastChar == EOF || lastChar == '\n' || lastChar == '\r') {
-		token.type = EOFTok;
 	}
 
 	//unknown token encountered
