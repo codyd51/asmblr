@@ -6,7 +6,7 @@ all: asmblr
 lexer: lexer.h lexer.cpp
 	 $(CC) $(CFLAGS) lexer.cpp
 
-parser: parser.cpp
+parser: parser.h parser.cpp
 	$(CC) $(CFLAGS) parser.cpp
 
 translator: translator.cpp

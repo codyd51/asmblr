@@ -4,16 +4,36 @@
 using namespace std;
 
 struct InstructionAST {
+private:
 	Token token;
-	InstructionAST(Token token) : token(token) {}
+public:
+	string strVal;
+	int argCount;
+	InstructionAST(Token token) : token(token), strVal(token.strVal), argCount(token.argCount) {}
 	InstructionAST() {}
+	void setToken(Token tok) {
+		token = tok;
+		strVal = token.strVal;
+		argCount = token.argCount;
+	}
 };
 
 struct OperandAST {
+private:
 	Token token;
-	//bool position;
-	OperandAST(Token token) : token(token) {}
+public:
+	string strVal;
+	int intVal;
+	TokenType type;
+
+	OperandAST(Token token) : token(token), strVal(token.strVal), intVal(token.intVal), type(token.type) {}
 	OperandAST() {}
+	void setToken(Token tok) {
+		token = tok;
+		strVal = token.strVal;
+		intVal = token.intVal;
+		type = token.type;
+	}
 };
 
 struct StatementAST {

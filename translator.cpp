@@ -31,25 +31,25 @@ void error(string errorStr, unsigned lineNumber) {
 
 string translateStatement(StatementAST stmt, unsigned lineNumber) {
 	string result = "";
-	if (InstructionLookupTable.find(stmt.instruction.token.strVal) == InstructionLookupTable.end()) {
-		string errorStr = "Unknown instruction " + stmt.instruction.token.strVal;
+	if (InstructionLookupTable.find(stmt.instruction.strVal) == InstructionLookupTable.end()) {
+		string errorStr = "Unknown instruction " + stmt.instruction.strVal;
 		error(errorStr, lineNumber);
 	}
-	string opCode = InstructionLookupTable.at(stmt.instruction.token.strVal);
+	string opCode = InstructionLookupTable.at(stmt.instruction.strVal);
 	result += opCode;
-	for (int i = 0; i < stmt.instruction.token.argCount; i++) {
-		if (stmt.operands.at(i).token.type == Register) {
-			if (RegisterLookupTable.find(stmt.operands.at(i).token.strVal) == RegisterLookupTable.end()) {
-				string errorStr = "Unknown register " + stmt.operands.at(i).token.strVal;
+	for (int i = 0; i < stmt.instruction.argCount; i++) {
+		if (stmt.operands.at(i).type == Register) {
+			if (RegisterLookupTable.find(stmt.operands.at(i).strVal) == RegisterLookupTable.end()) {
+				string errorStr = "Unknown register " + stmt.operands.at(i).strVal;
 				error(errorStr, lineNumber);
 			}
-			string reg = stmt.operands.at(i).token.strVal;
+			string reg = stmt.operands.at(i).strVal;
 			result += RegisterLookupTable.at(reg);
 		}
-		else if (stmt.operands.at(i).token.type == Number) {
+		else if (stmt.operands.at(i).type == Number) {
 			//convert int to hex
 			stringstream sstream;
-			sstream << hex << stmt.operands.at(i).token.intVal;
+			sstream << hex << stmt.operands.at(i).intVal;
 			result += sstream.str();
 			//lower 2 bytes of hex
 			result += "00";

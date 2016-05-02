@@ -55,10 +55,10 @@ StatementAST parseStatement() {
 	StatementAST stmt;
 	stmt.instruction = parseInstruction();
 	
-	if (stmt.instruction.token.argCount > 0) {
+	if (stmt.instruction.argCount > 0) {
 		stmt.operands.push_back(parseOperand());
 	
-		for (int i = 1; i < stmt.instruction.token.argCount; i++) {
+		for (int i = 1; i < stmt.instruction.argCount; i++) {
 			//eat comma
 			match(",");
 
