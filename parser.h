@@ -11,11 +11,7 @@ public:
 	int argCount;
 	InstructionAST(Token token) : token(token), strVal(token.strVal), argCount(token.argCount) {}
 	InstructionAST() {}
-	void setToken(Token tok) {
-		token = tok;
-		strVal = token.strVal;
-		argCount = token.argCount;
-	}
+	void setToken(Token tok);
 };
 
 struct OperandAST {
@@ -28,12 +24,7 @@ public:
 
 	OperandAST(Token token) : token(token), strVal(token.strVal), intVal(token.intVal), type(token.type) {}
 	OperandAST() {}
-	void setToken(Token tok) {
-		token = tok;
-		strVal = token.strVal;
-		intVal = token.intVal;
-		type = token.type;
-	}
+	void setToken(Token tok);	
 };
 
 struct StatementAST {

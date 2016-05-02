@@ -29,7 +29,19 @@ void match(string str) {
 	}
 	getTok();
 }
-	
+
+void InstructionAST::setToken(Token tok) {
+	token = tok;
+	strVal = token.strVal;
+	argCount = token.argCount;
+}
+
+void OperandAST::setToken(Token tok) {
+	token = tok;
+	strVal = token.strVal;
+	intVal = token.intVal;
+	type = token.type;
+}
 
 InstructionAST parseInstruction() {
 	verifyType(Instruction);
