@@ -32,7 +32,7 @@ Token getToken() {
 		string tokenStr;
 
 		//while there are characters to read, build up this identifier
-		while (isalnum(lastChar)) {
+		while (isalpha(lastChar)) {
 			tokenStr += lastChar;
 			lastChar = getchar();
 		}
@@ -50,14 +50,17 @@ Token getToken() {
 			token.type = Instruction;
 			token.argCount = 1;
 		}
-		else if (tokenStr.at(0) == 'r' || tokenStr.at(0) == 'R') {
+		//else if (tokenStr.at(0) == 'r' || tokenStr.at(0) == 'R') {
+		else {
 			token.type = Register;
 		}
+		/*
 		else {
 			//unknown!
 			cout << "Unknown token encountered: " << tokenStr << endl;
 			exit(1);
 		}
+		*/
 
 		token.strVal = tokenStr;
 	}

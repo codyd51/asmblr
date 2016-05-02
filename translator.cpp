@@ -24,25 +24,13 @@ const static map<string, string> RegisterLookupTable = {
 	{ "di", "bf" }
 };
 
-//map to convert numbered registers into named ones
-const static map<string, string> NumberedToNamedRegisterMap = {
-	{ "r0", "ax" },
-	{ "r1", "cx" },
-	{ "r2", "dx" },
-	{ "r3", "bx" },
-	{ "r4", "sp" },
-	{ "r5", "bp" },
-	{ "r6", "si" },
-	{ "r7", "di" }
-};	
-
 string translateStatement(StatementAST stmt) {
 	string result = "";
 	string opCode = InstructionLookupTable.at(stmt.instruction.token.strVal);
 	result += opCode;
 	for (int i = 0; i < stmt.instruction.token.argCount; i++) {
 		if (stmt.operands.at(i).token.type == Register) {
-			string reg = NumberedToNamedRegisterMap.at(stmt.operands.at(i).token.strVal);
+			string reg = stmt.operands.at(i).token.strVal;
 			result += RegisterLookupTable.at(reg);
 		}
 		else if (stmt.operands.at(i).token.type == Number) {
