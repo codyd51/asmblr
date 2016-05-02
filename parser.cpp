@@ -10,7 +10,7 @@ Token getTok() {
 	return currTok;
 }
 
-void error(string errorStr) {
+void parseError(string errorStr) {
 	cout << "Error: " << errorStr << "." << endl;
 	exit(1);
 }
@@ -18,14 +18,14 @@ void error(string errorStr) {
 void verifyType(TokenType type) {
 	if (currTok.type != type) {
 		string errorStr = "Expected type " + to_string(type) + ", received type " + to_string(currTok.type);
-		error(errorStr);
+		parseError(errorStr);
 	}
 }
 
 void match(string str) {
 	if (currTok.strVal != str) {
 		string errorStr = "Expected " + str + ", received " + currTok.strVal;
-		error(errorStr);
+		parseError(errorStr);
 	}
 	getTok();
 }

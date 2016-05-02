@@ -24,12 +24,25 @@ const static map<string, string> RegisterLookupTable = {
 	{ "di", "bf" }
 };
 
+void error(string errorStr) {
+	cout << "Error: " << errorStr << "." << endl;
+	exit(1);
+}
+
 string translateStatement(StatementAST stmt) {
 	string result = "";
+	if (InstructionLookupTable.find(stmt.instruction.token.strVal) == InstructionLookupTable.end()) {
+		string errorStr = "Unknown instruction " + stmt.instruction.token.strVal;
+		error(errorStr);
+	}
 	string opCode = InstructionLookupTable.at(stmt.instruction.token.strVal);
 	result += opCode;
 	for (int i = 0; i < stmt.instruction.token.argCount; i++) {
 		if (stmt.operands.at(i).token.type == Register) {
+			if (RegisterLookupTable.find(stmt.operands.at(i).token.strVal) == RegisterLookupTable.end()) {
+				string errorStr = "Unknown register " + stmt.operands.at(i).token.strVal;
+				error(errorStr);
+			}
 			string reg = stmt.operands.at(i).token.strVal;
 			result += RegisterLookupTable.at(reg);
 		}
