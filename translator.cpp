@@ -24,16 +24,16 @@ const static map<string, string> RegisterLookupTable = {
 	{ "di", "bf" }
 };
 
-void error(string errorStr) {
-	cout << "Error: " << errorStr << "." << endl;
+void error(string errorStr, unsigned lineNumber) {
+	cout << "Error (line " << to_string(lineNumber) << "): " << errorStr << "." << endl;
 	exit(1);
 }
 
-string translateStatement(StatementAST stmt) {
+string translateStatement(StatementAST stmt, unsigned lineNumber) {
 	string result = "";
 	if (InstructionLookupTable.find(stmt.instruction.token.strVal) == InstructionLookupTable.end()) {
 		string errorStr = "Unknown instruction " + stmt.instruction.token.strVal;
-		error(errorStr);
+		error(errorStr, lineNumber);
 	}
 	string opCode = InstructionLookupTable.at(stmt.instruction.token.strVal);
 	result += opCode;
@@ -41,7 +41,7 @@ string translateStatement(StatementAST stmt) {
 		if (stmt.operands.at(i).token.type == Register) {
 			if (RegisterLookupTable.find(stmt.operands.at(i).token.strVal) == RegisterLookupTable.end()) {
 				string errorStr = "Unknown register " + stmt.operands.at(i).token.strVal;
-				error(errorStr);
+				error(errorStr, lineNumber);
 			}
 			string reg = stmt.operands.at(i).token.strVal;
 			result += RegisterLookupTable.at(reg);
@@ -76,7 +76,7 @@ int main(int argv, char** args) {
 */
 	for (unsigned i = 0; i < stmtList.size(); i++) {
 		StatementAST stmt = stmtList.at(i);
-		hexStmtList.push_back(translateStatement(stmt));
+		hexStmtList.push_back(translateStatement(stmt, i));
 	}
 
 	cout << endl;
