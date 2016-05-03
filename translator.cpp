@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <map>
 #include <sstream>
+#include <fstream>
+#include <iterator>
+#include <algorithm>
 
 //static readonly lookup table
 //used to convert mnemonics into raw hex instructions
@@ -58,6 +61,31 @@ string translateStatement(StatementAST stmt, unsigned lineNumber) {
 	return result;
 }
 
+string binaryFromHex(string hex) {
+	string ret = "";
+	for (int i = 0; i < hex.length(); i++) {
+		switch (hex[i]) {
+			case '0': ret.append("0000");  break;
+			case '1': ret.append("0001");  break;
+			case '2': ret.append("0010");  break;
+			case '3': ret.append("0011");  break;
+			case '4': ret.append("0100");  break;
+			case '5': ret.append("0101");  break;
+			case '6': ret.append("0110");  break;
+			case '7': ret.append("0111");  break;
+			case '8': ret.append("1000");  break;
+			case '9': ret.append("1001");  break;
+			case 'A': ret.append("1010");  break;
+			case 'B': ret.append("1011");  break;
+			case 'C': ret.append("1100");  break;
+			case 'D': ret.append("1101");  break;
+			case 'E': ret.append("1110");  break;
+			case 'F': ret.append("1111");  break;
+		}
+	}
+	return ret;
+}
+
 int main(int argv, char** args) {
 	vector<StatementAST> stmtList = generateAST();
 
@@ -83,6 +111,14 @@ int main(int argv, char** args) {
 	for (unsigned i = 0; i < hexStmtList.size(); i++) {
 		cout << hexStmtList.at(i) << endl;
 	}
+
+	ofstream outfile("asmbld.o", ofstream::binary);
+	for (unsigned i = 0; i < hexStmtList.size(); i++) {
+		string str = binaryFromHex(hexStmtList.at(i));
+		outfile << str;
+	}
+
+	outfile.close();
 
 	return 0;
 }
