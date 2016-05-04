@@ -41,18 +41,19 @@ string translateStatement(StatementAST stmt, unsigned lineNumber) {
 	string opCode = InstructionLookupTable.at(stmt.instruction.strVal);
 	result += opCode;
 	for (int i = 0; i < stmt.instruction.argCount; i++) {
-		if (stmt.operands.at(i).type == Register) {
-			if (RegisterLookupTable.find(stmt.operands.at(i).strVal) == RegisterLookupTable.end()) {
-				string errorStr = "Unknown register " + stmt.operands.at(i).strVal;
+		OperandAST operand = stmt.operands.at(i);	
+		if (operand.type == Register) {
+			if (RegisterLookupTable.find(operand.strVal) == RegisterLookupTable.end()) {
+				string errorStr = "Unknown register " + operand.strVal;
 				error(errorStr, lineNumber);
 			}
-			string reg = stmt.operands.at(i).strVal;
+			string reg = operand.strVal;
 			result += RegisterLookupTable.at(reg);
 		}
-		else if (stmt.operands.at(i).type == Number) {
+		else if (operand.type == Number) {
 			//convert int to hex
 			stringstream sstream;
-			sstream << hex << stmt.operands.at(i).intVal;
+			sstream << hex << operand.intVal;
 			result += sstream.str();
 			//lower 2 bytes of hex
 			result += "00";
@@ -63,7 +64,7 @@ string translateStatement(StatementAST stmt, unsigned lineNumber) {
 
 string binaryFromHex(string hex) {
 	string ret = "";
-	for (int i = 0; i < hex.length(); i++) {
+	for (unsigned i = 0; i < hex.length(); i++) {
 		switch (hex[i]) {
 			case '0': ret.append("0000");  break;
 			case '1': ret.append("0001");  break;
