@@ -93,7 +93,7 @@ vector<string> hexBytesFromString(string str) {
 	for (unsigned i = 0; i < str.length(); i++) {
 		buff += str[i];
 	
-		if (buff.length() >= 2) {
+		if (buff.length() >= 4) {
 			ret.push_back(buff);
 			buff = "";
 		}
@@ -101,10 +101,17 @@ vector<string> hexBytesFromString(string str) {
 	
 	//handle strings with uneven number of characters
 	//if it was odd, we still have a character left over
-	if (buff.length() != 0) {
-		ret.push_back(buff);
-	}
+	//if (buff.length() != 0) {
+	//	ret.push_back(buff);
+	//}
 	return ret;
+}
+
+void writeRawHexStringToFile(string str, ofstream& file) {
+	istringstream buff(str);
+	int hexVal;
+	buff >> hex >> hexVal;	
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
 }
 
 void writeHexStringToFile(string header, ofstream& file) {
@@ -113,35 +120,72 @@ void writeHexStringToFile(string header, ofstream& file) {
 		istringstream buff(hexBytes.at(i));
 		int hexVal;
 		buff >> hex >> hexVal;
+		cout << "writing " << buff << " (of length " << buff.str().length() << ") as " << hexVal << endl;
 		file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
 	}
 }
 
 void writeHeader(ofstream& file) {
-	//string header = "464c457f";
-	//writeHexStringToFile(header, file);
-	istringstream header("464c457f");
+/*	istringstream header("464c457f");
 	int hexVal;
 	header >> hex >> hexVal;
 	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));	
+*/
+	int hexVal;
+	string header = "464c457f";
+	writeRawHexStringToFile(header, file);
+/*
+	istringstream headerInfo("A1");
+	hexVal = 0;
+	headerInfo >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+*/
+//	string headerInfo = "a1";
+//	writeHexStringToFile(headerInfo, file);
+	//istringstream headerInfo("00010101");
+	//append last 9 bytes we need
+	//a full ELF header is 16 bytes, but we only use the top 7
+	//4 for ELF magic, 3 below
+	//append last 9 bytes last since we're little endian
+	//istringstream headerInfo("000000000000000000");
+	
+	//headerInfo += "000000000000000000";
+	//append other 3 used bytes in header
+	istringstream headerInfo("00010101");
+	hexVal = 0;
+	headerInfo >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+
+	for (int i = 0; i < 2; i++) {
+		istringstream headerInfo("0000");
+		hexVal = 0;
+		headerInfo >> hex >> hexVal;
+		file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+	}
+
+	istringstream footer("00030001");
+	hexVal = 0;
+	footer >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+
+	istringstream footer2("0001");
+	hexVal = 0;
+	footer2 >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+/*
+	istringstream headerInfoStream(headerInfo);
+
+	hexVal = 0;
+	headerInfoStream >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));
+*/
 }
 
 int main(int argv, char** args) {
 	vector<StatementAST> stmtList = generateAST();
 
 	vector<string> hexStmtList;
-/*
-	for (unsigned i = 0; i < stmtList.size(); i++) {
-		StatementAST stmt = stmtList.at(i);
-		cout << "{Instruction} " << stmt.instruction.token.strVal;
-		for (unsigned j = 0; j < stmt.operands.size(); j++) {
-			cout << " {Operand} " << stmt.operands.at(j).token.strVal;
-		}
-		cout << endl;
-
-		hexStmtList.push_back(translateStatement(stmt));
-	}
-*/
+	
 	for (unsigned i = 0; i < stmtList.size(); i++) {
 		StatementAST stmt = stmtList.at(i);
 		hexStmtList.push_back(translateStatement(stmt, i));
@@ -153,22 +197,9 @@ int main(int argv, char** args) {
 	}
 
 	ofstream file("asmbld.o", ios::out | ios::binary);
-	/*istringstream header("464c457f");	
-	int hexVal;
-	header >> hex >> hexVal;
-	file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
-
-	for (unsigned i = 0; i < hexStmtList.size(); i++) {
-		vector<string> hexBytes = hexBytesFromString(hexStmtList.at(i));
-		for (unsigned j = 0; j < hexBytes.size(); j++) {
-			istringstream buff(hexBytes.at(j));
-			int hexVal;
-			buff >> hex >> hexVal;
-			cout << "writing byte: " << hexVal << endl;
-			file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
-		}	
-	}*/
+	
 	writeHeader(file);
+	
 	for (unsigned i = 0; i < hexStmtList.size(); i++) {
 		writeHexStringToFile(hexStmtList.at(i), file);
 	}
