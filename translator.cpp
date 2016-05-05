@@ -87,6 +87,45 @@ string binaryFromHex(string hex) {
 	return ret;
 }
 
+vector<string> hexBytesFromString(string str) {
+	vector<string> ret;
+	string buff;
+	for (unsigned i = 0; i < str.length(); i++) {
+		buff += str[i];
+	
+		if (buff.length() >= 2) {
+			ret.push_back(buff);
+			buff = "";
+		}
+	}
+	
+	//handle strings with uneven number of characters
+	//if it was odd, we still have a character left over
+	if (buff.length() != 0) {
+		ret.push_back(buff);
+	}
+	return ret;
+}
+
+void writeHexStringToFile(string header, ofstream& file) {
+	vector<string> hexBytes = hexBytesFromString(header);
+	for (unsigned i = 0; i < hexBytes.size(); i++) {
+		istringstream buff(hexBytes.at(i));
+		int hexVal;
+		buff >> hex >> hexVal;
+		file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
+	}
+}
+
+void writeHeader(ofstream& file) {
+	//string header = "464c457f";
+	//writeHexStringToFile(header, file);
+	istringstream header("464c457f");
+	int hexVal;
+	header >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(hexVal));	
+}
+
 int main(int argv, char** args) {
 	vector<StatementAST> stmtList = generateAST();
 
@@ -113,13 +152,28 @@ int main(int argv, char** args) {
 		cout << hexStmtList.at(i) << endl;
 	}
 
-	ofstream outfile("asmbld.o", ofstream::binary);
+	ofstream file("asmbld.o", ios::out | ios::binary);
+	/*istringstream header("464c457f");	
+	int hexVal;
+	header >> hex >> hexVal;
+	file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
+
 	for (unsigned i = 0; i < hexStmtList.size(); i++) {
-		string str = binaryFromHex(hexStmtList.at(i));
-		outfile << str;
+		vector<string> hexBytes = hexBytesFromString(hexStmtList.at(i));
+		for (unsigned j = 0; j < hexBytes.size(); j++) {
+			istringstream buff(hexBytes.at(j));
+			int hexVal;
+			buff >> hex >> hexVal;
+			cout << "writing byte: " << hexVal << endl;
+			file.write(reinterpret_cast<char*>(&hexVal), sizeof(int));
+		}	
+	}*/
+	writeHeader(file);
+	for (unsigned i = 0; i < hexStmtList.size(); i++) {
+		writeHexStringToFile(hexStmtList.at(i), file);
 	}
 
-	outfile.close();
+	file.close();
 
 	return 0;
 }
